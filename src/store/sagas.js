@@ -4,10 +4,12 @@ import { apiConnection } from "../services/apiConnection";
 
 function* postForm(action) {
   try {
-    const { teams } = yield call(apiConnection, "quick");
-    yield put({ type: "POST_FORM_SUCCESS", items: teams });
+    console.log(action.data);
+    const { teams } = yield call(apiConnection, "quick", action.data);
+
+    action.res(teams);
   } catch (e) {
-    yield put({ type: "POST_FORM_FAILED", error: e.message });
+    action.rej();
   }
 }
 

@@ -10,11 +10,7 @@ export const formsReducer = (
 ) => {
   switch (type) {
     case POST_FORM_REQUESTED:
-      return { ...state, loading: true };
-    case POST_FORM_SUCCESS:
-      return { ...state, ...action, loading: false };
-    case POST_FORM_FAILED:
-      return { ...state, ...action, loading: false };
+      return { ...state };
 
     default:
       return state;

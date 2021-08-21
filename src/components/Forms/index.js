@@ -1,29 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
-import { Formik, Form, Field, useFormikContext } from "formik";
+import { Formik, Form, Field } from "formik";
 
 import { POST_FORM_REQUESTED } from "../../store/form/actions";
 import { Loading } from "../Loading";
 
 import { formikConfig } from "./formikConfig";
 import "./index.scss";
-
-/**
- * 2 then this
- * This little guy has one job, and one job only,
- * to render a loading indicator when it's mounted,
- * and to set the form's loading (submitting) state to
- * NOT SUBMITTING when it's unmounted
- */
-const LoadingHandler = () => {
-  const { setSubmitting } = useFormikContext();
-
-  // resets the form state on unmount
-  useEffect(() => () => {
-    setSubmitting(false);
-  });
-  return <Loading message="Hold your pants..." />;
-};
 
 /**
  * 1 read this first
@@ -34,33 +17,49 @@ const LoadingHandler = () => {
  * @param {Props} props
  */
 const Teams = ({ dispatch, loading }) => {
+  const [teams, setTeams] = useState([]);
   return (
-    <Formik
-      {...formikConfig}
-      onSubmit={(values, { setSubmitting }) => {
-        dispatch({ type: POST_FORM_REQUESTED, data: values });
-      }}
-    >
-      {({ isSubmitting }) => (
-        <Form>
-          <h2>Form</h2>
-          <Field name="name" type="text">
-            {({ field, meta }) => (
-              <div>
-                <input type="text" placeholder="Name" {...field} />
-                {meta.touched && meta.error && (
-                  <div className="error">{meta.error}</div>
-                )}
-              </div>
-            )}
-          </Field>
-          <button type="submit" disabled={isSubmitting}>
-            {/* conditionally rendering the component which will update the forms' state */}
-            {loading ? <LoadingHandler /> : "Save it!"}
-          </button>
-        </Form>
-      )}
-    </Formik>
+    <>
+      <Formik
+        {...formikConfig}
+        onSubmit={(values, { setSubmitting }) => {
+          return new Promise((res, rej) => {
+            dispatch({ type: POST_FORM_REQUESTED, data: values, res, rej });
+          }).then((res) => {
+            setTeams([...teams, ...res]);
+          });
+        }}
+      >
+        {({ isSubmitting }) => (
+          <Form>
+            <h2>Form</h2>
+            <Field name="name" type="text">
+              {({ field, meta }) => (
+                <div>
+                  <input type="text" placeholder="Name" {...field} />
+                  {meta.touched && meta.error && (
+                    <div className="error">{meta.error}</div>
+                  )}
+                </div>
+              )}
+            </Field>
+            <button type="submit" disabled={isSubmitting}>
+              {/* Now we can conditionally render the loading based on the form's state, instead of store's */}
+              {isSubmitting ? (
+                <Loading message="Hold your pants..." />
+              ) : (
+                "Save it!"
+              )}
+            </button>
+          </Form>
+        )}
+      </Formik>
+      {teams.map(({ id, name }) => (
+        <article key={id}>
+          <h2>{name}</h2>
+        </article>
+      ))}
+    </>
   );
 };
 
