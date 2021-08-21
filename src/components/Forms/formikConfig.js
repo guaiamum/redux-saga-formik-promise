@@ -8,8 +8,8 @@ export const formikConfig = {
     name: Yup.string()
       .test(
         "is-jimmy",
-        "${value} is not Jimmy", // eslint-disable-line no-template-curly-in-string
-        (value, context) => value === "jimmy"
+        "${value} is not 5 chars", // eslint-disable-line no-template-curly-in-string
+        (value, context) => value.length === 5
       )
       .required("Required field")
   })

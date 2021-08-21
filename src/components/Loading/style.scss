@@ -6,7 +6,6 @@
         font-weight: bold;
         display: inline-block;
         margin-top: 5px;
-        color: #62D9FB;
     }
 
     &__ring {
@@ -26,7 +25,7 @@
             margin: 8px;
             border-width: 5px;
             border-style: solid;
-            border-color: #62D9FB transparent transparent transparent;
+            border-color: white transparent transparent transparent;
             border-radius: 50%;
             animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
 

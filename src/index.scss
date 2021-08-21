@@ -1,3 +1,8 @@
+$base-blue: #62D9FB;
+$darker-blue: #046986;
+$light-gray: #c1c1c1;
+$darker-gray: #5e5e5e;
+
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -31,5 +36,38 @@ code {
 
 h1, h2, h3, h4, h5 {
     margin: 20px;
-    color: darken(#62D9FB, 20);
+    color: $darker-blue;
+}
+
+// BUTTON
+.btn {
+    border: none;
+    
+    border-radius: .5rem;
+    padding: 1rem;
+    
+    background-color: $darker-blue;
+    color: white;
+    font-weight: bold;
+}
+.btn:disabled {
+    background-color: $light-gray;
+    color: $darker-gray
+}
+
+// INPUT
+.input {
+    margin: 1rem 0;
+    border-color: $darker-blue;
+    padding: .5rem;
+    font-size: 1.2rem;
+    border-radius: .5rem;
+
+    outline-offset: .2rem;
+}
+
+form {
+    max-width: 500px;
+    margin: auto;
+    text-align: center;
 }

@@ -1,21 +1,21 @@
-const mock = {
+const genMock = ({ name }) => ({
   teams: [
     {
-      id: "1f",
+      id: `${new Date().getUTCMilliseconds()}`,
       crestUrl: "https://picsum.photos/200/300",
-      shortName: "Team 1",
-      name: "This is Team 1"
+      shortName: name.substring(0, 1),
+      name
     }
   ]
-};
+});
 
-export const apiConnection = (endpoint = "") => {
+export const apiConnection = (endpoint = "", values) => {
   return new Promise((res) => {
     const sleepTime = endpoint === "quick" ? 900 : 3000;
 
     const timeout = setTimeout(() => {
       console.log("done with req");
-      res(mock);
+      res(genMock(values));
 
       clearTimeout(timeout); // not necessary, leaving here in case I change it to cancel "API request"
     }, sleepTime);
