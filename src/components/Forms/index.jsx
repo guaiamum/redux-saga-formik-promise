@@ -1,8 +1,8 @@
-import { useEffect } from "react";
 import { connect } from "react-redux";
-import { Formik, Form, Field, useFormikContext } from "formik";
+import { Formik, Form, Field } from "formik";
+import { ERROR_ACTION, WAIT_FOR_ACTION } from 'redux-wait-for-action';
 
-import { POST_FORM_REQUESTED } from "../../store/form/actions";
+import { POST_FORM_FAILED, POST_FORM_REQUESTED, POST_FORM_SUCCESS } from "../../store/form/actions";
 import { Loading } from "../Loading";
 
 import { formikConfig } from "./formikConfig";
@@ -10,15 +10,27 @@ import { formikConfig } from "./formikConfig";
 /**
  * 1 read this first
  * This renders a formik Form and a text input field,
- * below it, we hve the magic ingredient, the submit button
- * which needs to bind itself to the app's store loading state
- * This is achieved with the above component `LoadingHandler`
+ * below it, we have the magic ingredient, the submit button
+ * which needs to bind itself to the form's loading state
+ * This is achieved with the help from `redux-wait-for-action`
  * @param {Props} props
  */
-const Teams = ({ dispatch, loading, teams }) => {
+const Teams = ({ dispatch, teams }) => {
+  /**
+   * Now our submitHandler returns a Promise, which
+   * Formik handles automagically and sets isSubmitting to
+   * false once it resolves
+   * @param {Object} values form values
+   * @param {Object} actions form actions
+   * @returns 
+   */
   const submitHandler = (values, { setSubmitting }) => {
-    dispatch({ type: POST_FORM_REQUESTED, data: values });
+    return dispatch({ type: POST_FORM_REQUESTED, data: values,
+        [WAIT_FOR_ACTION]: POST_FORM_SUCCESS,
+        [ERROR_ACTION]: POST_FORM_FAILED
+      });
   }
+
   return (
     <>
       <Formik
@@ -41,8 +53,8 @@ const Teams = ({ dispatch, loading, teams }) => {
 
           {/* disabling and adding loading content to submit button */}
           <button type="submit" className='btn' disabled={isSubmitting}>
-            {/* conditionally rendering the component which will update the forms' state */}
-            {loading ? <LoadingHandler /> : "Save it!"}
+            {/* Now we can conditionally render the loading based on the form's state, instead of store's */}
+            { isSubmitting ? <Loading message="Hold your pants..." /> : "Save it!" }
           </button>
         </Form>
       )}
@@ -57,27 +69,7 @@ const Teams = ({ dispatch, loading, teams }) => {
 };
 
 /**
- * 2 then this
- * This little guy does two things:
- * renders a loading indicator when it's mounted,
- * and sets the form's loading (submitting) state to
- * **NOT SUBMITTING** when it's unmounted
- */
-const LoadingHandler = () => {
-  const { setSubmitting } = useFormikContext();
-
-  // resets the form state on unmount
-  useEffect(() => () => {
-    setSubmitting(false);
-  });
-
-  return <Loading message="Hold your pants..." />;
-};
-
-/**
  * 3 Finally,
- * the binding between the saga waiting on the response and the form
- * is done via mounting and unmounting the `LoadingHandler` component
- * ie. I need two things to do one job, not to mention the connect below
+ * we still need connecting to receive the response
  */
 export default connect((state) => state.forms)(Teams);

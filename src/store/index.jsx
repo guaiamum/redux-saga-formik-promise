@@ -1,6 +1,7 @@
-import { createStore, combineReducers, applyMiddleware } from "redux";
+import { createStore, combineReducers, applyMiddleware, compose } from "redux";
 import { Provider } from "react-redux";
 import createSagaMiddleware from "redux-saga";
+import createReduxWaitForMiddleware from 'redux-wait-for-action';
 
 import { formsReducer } from "./form/reducers";
 
@@ -14,7 +15,10 @@ export const AppStore = ({ children }) => {
     combineReducers({
       forms: formsReducer
     }),
-    applyMiddleware(sagaMiddleware)
+    compose(
+      applyMiddleware(sagaMiddleware),
+      applyMiddleware(createReduxWaitForMiddleware())
+    )
   );
   // then run the saga
   sagaMiddleware.run(mySaga);
